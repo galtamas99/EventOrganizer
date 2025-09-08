@@ -24,5 +24,6 @@ function deleteEvent() {
 }
 
 function getEvents() {
-  return (searchText, page) => api.get(`api/events?page=${page || 0}&size=10&sort=starts_at&order=asc&search=${searchText || ''}`)
+  return (searchText, page, size) =>
+    api.get(`api/events?page=${page || 0}&size=${size || 10}&sort=starts_at&order=asc&search=${searchText || ''}`)
 }

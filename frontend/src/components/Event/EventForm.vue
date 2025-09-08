@@ -10,13 +10,16 @@
     },
   })
 
-  const eventData = ref({})
+  const user = JSON.parse(localStorage.getItem('user'))
+  const eventData = ref({ organizer_id: user.id })
+  const statusOptions = ref(['draft', 'published', 'cancelled'])
 
   const getEventData = () => {
     if (props.eventId) {
       eventService.getEventById(props.eventId).then((response) => {
         if (response.status === 200) {
           eventData.value = response.data.data
+          eventData.value.organizer_id = user.id
         }
       })
     }
@@ -84,77 +87,75 @@
     <div class="w-full flex justify-center">
       <div class="bg-white p-6 rounded-lg shadow-md w-1/2 grid grid-cols-2 gap-3">
         <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="title">Title</label>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Title</label>
           <input
             v-model="eventData.title"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="title"
             type="text"
             placeholder="Event Title"
           />
         </div>
         <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="description">Description</label>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
           <textarea
             v-model="eventData.description"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="description"
             placeholder="Event Description"
           ></textarea>
         </div>
         <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="starts_at">Starts at</label>
-          <textarea
+          <label class="block text-gray-700 text-sm font-bold mb-2">Starts at</label>
+          <input
             v-model="eventData.starts_at"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="description"
-            placeholder="Event Description"
-          ></textarea>
+            placeholder="Event starts at"
+            type="datetime-local"
+          />
         </div>
         <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="location">Location</label>
-          <textarea
+          <label class="block text-gray-700 text-sm font-bold mb-2">Location</label>
+          <input
             v-model="eventData.location"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="description"
-            placeholder="Event Description"
-          ></textarea>
+            placeholder="Event location"
+            type="text"
+          />
         </div>
         <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="capacity">Capacity</label>
-          <textarea
+          <label class="block text-gray-700 text-sm font-bold mb-2">Capacity</label>
+          <input
             v-model="eventData.capacity"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="description"
-            placeholder="Event Description"
-          ></textarea>
+            placeholder="Event capacity"
+            type="number"
+          />
         </div>
         <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="ticket_price">Ticket price</label>
-          <textarea
+          <label class="block text-gray-700 text-sm font-bold mb-2">Ticket price</label>
+          <input
             v-model="eventData.ticket_price"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="description"
-            placeholder="Event Description"
-          ></textarea>
+            placeholder="Event ticket price"
+            type="number"
+          />
         </div>
         <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="category">Category</label>
-          <textarea
+          <label class="block text-gray-700 text-sm font-bold mb-2">Category</label>
+          <input
             v-model="eventData.category"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="description"
-            placeholder="Event Description"
-          ></textarea>
+            placeholder="Event category"
+          />
         </div>
         <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="status">Status</label>
-          <textarea
+          <label class="block text-gray-700 text-sm font-bold mb-2">Status</label>
+          <select
             v-model="eventData.status"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="description"
-            placeholder="Event Description"
-          ></textarea>
+            placeholder="Event status"
+          >
+            <option v-for="option in statusOptions" :key="option" :value="option">{{ option }}</option>
+          </select>
         </div>
       </div>
     </div>

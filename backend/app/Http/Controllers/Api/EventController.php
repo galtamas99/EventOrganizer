@@ -20,7 +20,14 @@ class EventController extends Controller
         $sort = $request->query('sort', 'created_at');
         $order = $request->query('order', 'desc');
 
-        $querryFromDb = Event::query()->orderBy($sort, $order);
+        $querryFromDb = Event::query();
+        $user  = $request->user();
+
+        if ($user->hasRole('organizer')) {
+            $querryFromDb->where('organizer_id', $user->id);
+        } else if($user->hasRole('user')) {
+            $querryFromDb->where('status', 'published');
+        }
 
         if ($searchText = $request->query('search')) {
             $querryFromDb->where(function($query) use ($searchText) {
@@ -31,7 +38,7 @@ class EventController extends Controller
             });
         }
 
-        $events = $querryFromDb->paginate($size);
+        $events = $querryFromDb->orderby($sort, $order)->paginate($size);
 
         return EventResource::collection($events);
     }

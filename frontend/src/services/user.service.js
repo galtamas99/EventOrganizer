@@ -6,6 +6,11 @@ export const userService = {
   createUser: createUser(),
   updateUser: updateUser(),
   deleteUser: deleteUser(),
+  blockUser: blockUser(),
+}
+
+function blockUser() {
+  return (id) => api.post(`api/users/${id}/block`)
 }
 
 function getUserById() {

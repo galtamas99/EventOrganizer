@@ -38,6 +38,11 @@ class User extends Authenticatable implements JWTSubject
         'remember_token',
     ];
 
+    public function getRoleNames()
+    {
+        return $this->roles->pluck('name');
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();

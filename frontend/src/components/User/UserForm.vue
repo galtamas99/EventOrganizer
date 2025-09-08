@@ -53,6 +53,20 @@
     }
   }
 
+  const blockUser = () => {
+    if (props.userId) {
+      const action = userData.value.is_blocked ? 'unblock' : 'block'
+      if (confirm(`Are you sure you want to ${action} this user?`)) {
+        userService.blockUser(props.userId).then((response) => {
+          if (response.status === 200) {
+            userData.value.is_blocked = !userData.value.is_blocked
+            alert(`User ${action}ed successfully`)
+          }
+        })
+      }
+    }
+  }
+
   onBeforeMount(() => {
     getUserData()
   })
@@ -71,6 +85,12 @@
         <h1 class="text-2xl font-bold mb-4">{{ userId ? 'Edit User' : 'Create User' }}</h1>
       </div>
       <div class="flex items-center gap-3">
+        <button
+          @click="blockUser"
+          class="mb-4 px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition hover:cursor-pointer"
+        >
+          {{ userData.is_blocked ? 'Unblock' : 'Block' }}
+        </button>
         <button @click="saveuser" class="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition hover:cursor-pointer">
           Save
         </button>

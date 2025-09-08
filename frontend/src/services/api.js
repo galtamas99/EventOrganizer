@@ -21,6 +21,8 @@ function logoutAndRedirect() {
   if (isLoggingOut) return
   isLoggingOut = true
   const toLogin = { name: 'login' }
+  localStorage.removeItem('access_token')
+  localStorage.removeItem('user')
   if (router && router.currentRoute && router.currentRoute.value.name !== 'login') {
     router.push(toLogin).finally(() => (isLoggingOut = false))
   } else {

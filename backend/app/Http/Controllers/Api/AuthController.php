@@ -21,6 +21,11 @@ class AuthController extends Controller
             throw ValidationException::withMessages(['email' => 'Invalid credentials']);
         }
 
+        if (auth('api')->user()->is_blocked) {
+            auth('api')->logout();
+            throw ValidationException::withMessages(['email' => 'User is blocked']);
+        }
+
         return $this->respondWithToken($token);
     }
 
@@ -43,11 +48,18 @@ class AuthController extends Controller
 
     protected function respondWithToken(string $token)
     {
-         return response()->json([
+        $user = auth('api')->user();
+
+        return response()->json([
             'access_token' => $token,
             'token_type'   => 'bearer',
             'expires_in'   => auth('api')->factory()->getTTL() * 60,
-            'user'         => auth('api')->user(),
+            'user'         => [
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'email' => $user->email,
+                'roles' => $user->getRoleNames()->values(),
+            ],
         ]);
     }
 }

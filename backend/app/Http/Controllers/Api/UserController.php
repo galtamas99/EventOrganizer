@@ -103,4 +103,19 @@ class UserController extends Controller
 
         return response()->noContent();
     }
+
+    /**
+     * Block the specified user.
+     */
+    public function block(Request $request, User $user)
+    {
+        if ($request->user()->id === $user->id) {
+            return response()->json([
+                'message' => 'You cannot block your own user.'
+            ], 422);
+        }
+        $user->is_blocked = !$user->is_blocked;
+        $user->save();
+        return new UserResource($user->load('roles'));
+    }
 }

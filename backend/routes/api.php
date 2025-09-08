@@ -29,9 +29,15 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('users', [UserController::class, 'store']);
         Route::put('users/{user}', [UserController::class, 'update']);
         Route::delete('users/{user}', [UserController::class, 'destroy']);
+        Route::post('users/{user}/block', [UserController::class, 'block']);
     });
 
-    Route::middleware('role:admin')->group(function () {
+    Route::middleware('role:user')->group(function () {
+        Route::post('bookings', [BookingController::class, 'store']);
+        Route::get('my-bookings', [BookingController::class, 'userBookings']);
+    });
+
+    Route::middleware('role:admin|organizer')->group(function () {
         Route::get('bookings', [BookingController::class, 'index']);
         Route::get('bookings/{booking}', [BookingController::class, 'show']);
         Route::put('bookings/{booking}', [BookingController::class, 'update']);

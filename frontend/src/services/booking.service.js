@@ -5,6 +5,17 @@ export const bookingService = {
   getBookingById: getBookingById(),
   updateBooking: updateBooking(),
   deleteBooking: deleteBooking(),
+  createBooking: createBooking(),
+  getMyBookings: getMyBookings(),
+}
+
+function getMyBookings() {
+  return (searchText, page, size) =>
+    api.get(`api/my-bookings?page=${page || 0}&size=${size || 0}&sort=created_at&order=asc&search=${searchText || ''}`)
+}
+
+function createBooking() {
+  return (bookingData) => api.post('api/bookings', bookingData)
 }
 
 function getBookingById() {
@@ -20,5 +31,6 @@ function deleteBooking() {
 }
 
 function getBookings() {
-  return (searchText, page) => api.get(`api/bookings?page=${page || 0}&size=10&sort=created_at&order=asc&search=${searchText || ''}`)
+  return (searchText, page, size) =>
+    api.get(`api/bookings?page=${page || 0}&size=${size || 0}&sort=created_at&order=asc&search=${searchText || ''}`)
 }

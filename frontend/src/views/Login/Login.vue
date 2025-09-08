@@ -14,7 +14,7 @@
       .then((response) => {
         if (response.status === 200 && response.data.access_token) {
           localStorage.setItem('access_token', response.data.access_token)
-          localStorage.setItem('user', response.data.user)
+          localStorage.setItem('user', JSON.stringify(response.data.user))
           router.push('/dashboard')
         }
       })

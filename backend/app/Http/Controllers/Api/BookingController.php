@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
-use App\Http\Requests\UpdateEventRequest;
 use App\Http\Resources\BookingResource;
 use Illuminate\Http\Request;
 use App\Models\Booking;
-
+use Illuminate\Support\Facades\DB;
+use App\Models\Event;
 class BookingController extends Controller
 {
     /**
@@ -21,10 +21,37 @@ class BookingController extends Controller
         $sort = $request->query('sort', 'created_at');
         $order = $request->query('order', 'desc');
 
+        $user = $request->user();
+
+         $query = Booking::with([
+            'user:id,name,email',
+            'event',
+        ])->orderBy($sort, $order);
+
+        if ($user->hasRole('organizer')) {
+            $query->whereHas('event', function ($q) use ($user) {
+                $q->where('organizer_id', $user->id);
+            });
+        }
+
+        $bookings = $query->paginate($size);
+
+        return BookingResource::collection($bookings);
+    }
+
+    public function userBookings(Request $request)
+    {
+        $size = $request->query('size', 10);
+        $sort = $request->query('sort', 'created_at');
+        $order = $request->query('order', 'desc');
+
+        $user = $request->user();
+
         $bookings = Booking::with([
             'user:id,name,email',   
-            'event:id,title,starts_at'
+            'event'
         ])
+        ->where('user_id', $user->id)
         ->orderBy($sort, $order)
         ->paginate($size);
 
@@ -36,9 +63,39 @@ class BookingController extends Controller
      */
     public function store(StoreBookingRequest $request)
     {
-        $data = $request->validated();
-        $booking = Booking::create($data);
-        return (new BookingResource($booking))->response()->setStatusCode(201);
+        $data   = $request->validated();
+        $userId = auth('api')->id();
+
+        return DB::transaction(function () use ($data, $userId) {
+            $event = Event::whereKey($data['event_id'])
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $alreadyBooked = Booking::where('event_id', $event->id)->sum('quantity');
+
+            $available = max(0, $event->capacity - $alreadyBooked);
+
+            if ($data['quantity'] > $available) {
+                return response()->json([
+                    'message'    => 'Not enough tickets left',
+                    'available'  => $available,
+                    'requested'  => (int) $data['quantity'],
+                    'capacity'   => (int) $event->capacity,
+                    'booked'     => (int) $alreadyBooked,
+                ], 422);
+            }
+
+            $booking = Booking::create([
+                'user_id'     => $userId,
+                'event_id'    => $event->id,
+                'quantity'    => (int) $data['quantity'],
+                'total_price' => (int) $data['quantity'] * (int) $event->ticket_price,
+            ]);
+
+            return (new BookingResource($booking->load(['user', 'event'])))
+                ->response()
+                ->setStatusCode(201);
+        });
     }
 
     /**

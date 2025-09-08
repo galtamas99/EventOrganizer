@@ -19,6 +19,7 @@ class Event extends Model
         'ticket_price',
         'category',
         'status',
+        'organizer_id',
     ];
 
     protected $casts = [
@@ -27,4 +28,8 @@ class Event extends Model
         'ticket_price' => 'integer',
     ];
 
+    public function organizer()
+    {   
+        return $this->belongsTo(User::class, 'organizer_id');
+    }
 }

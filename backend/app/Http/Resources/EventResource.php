@@ -18,14 +18,14 @@ class EventResource extends JsonResource
             'id'          => $this->id,
             'title'       => $this->title,
             'description' => $this->description,
-            'starts_at'   => $this->starts_at,
+            'starts_at'   => $this->starts_at->format('Y-m-d\TH:i'),
             'location'    => $this->location,
             'capacity'    => $this->capacity,
             'ticket_price'=> $this->ticket_price,
             'category'    => $this->category,
             'status'      => $this->status,
-            'createdAt'   => $this->created_at,
-            'updatedAt'   => $this->updated_at,
+            'created_at'  => $this->created_at->format('Y-m-d\TH:i'),
+            'updated_at'  => $this->updated_at->format('Y-m-d\TH:i'),
         ];
     }
 }

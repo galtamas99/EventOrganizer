@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             'roles'      => $this->getRoleNames(),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
+            'is_blocked' => $this->is_blocked,
         ];
     }
 }

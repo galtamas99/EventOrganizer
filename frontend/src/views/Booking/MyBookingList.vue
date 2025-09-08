@@ -12,7 +12,7 @@
   let debounce = null
 
   const getBookingsData = () => {
-    bookingService.getBookings(searchText.value, currentPage.value - 1, pageSize.value).then((response) => {
+    bookingService.getMyBookings(searchText.value, currentPage.value - 1, pageSize.value).then((response) => {
       bookingData.value = response.data.data
       meta.value = response.data.meta
     })
@@ -61,7 +61,7 @@
   <LayoutAuthenticated>
     <div class="container p-4 w-full">
       <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold mb-4">Booking List</h1>
+        <h1 class="text-2xl font-bold mb-4">My Booking List</h1>
         <div class="flex gap-3">
           <input
             @input="debounceSearch"
@@ -73,12 +73,7 @@
         </div>
       </div>
       <div v-if="Object.keys(bookingData).length > 0">
-        <div
-          v-for="booking in bookingData"
-          :key="booking.id"
-          class="mb-4 p-4 border rounded-xl flex gap-3 mb-3 w-full hover:cursor-pointer hover:bg-stone-600"
-          @click="$router.push(`/bookings/${booking.id}/edit`)"
-        >
+        <div v-for="booking in bookingData" :key="booking.id" class="mb-4 p-4 border rounded-xl flex gap-3 mb-3 w-full hover:bg-stone-600">
           <div class="flex flex-col w-1/4">
             <p>User</p>
             <h2 class="text-xl font-semibold">{{ booking.user.email }}</h2>

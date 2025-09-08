@@ -30,6 +30,7 @@ class StoreEventRequest extends FormRequest
             'ticket_price'=> ['required','integer','min:0'],
             'category'    => ['nullable','string','max:100'],
             'status'      => ['required','in:draft,published,cancelled'],
+            'organizer_id'=> ['nullable','exists:users,id'],
         ];
     }
 }
